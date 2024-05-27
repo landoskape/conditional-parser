@@ -100,7 +100,7 @@ This example corresponds to [parallel_example](https://github.com/landoskape/con
 parser = ConditionalArgumentParser(description="A parser with parallel conditional arguments.")
 
 # Add an argument determining which dataset to use
-parser.add_argument("dataset", type=str, required=True, help="Which dataset to use for training/testing.")
+parser.add_argument("dataset", type=str, help="Which dataset to use for training/testing.")
 
 # Add conditionals that are only needed for dataset1
 dest = "dataset"

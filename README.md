@@ -18,6 +18,9 @@ works almost identically, but allows the addition of conditional arguments in an
 In addition, the way ``ConditionalArgumentParser`` is structured maintains the usefulness of ``-help`` 
 messages such that users can receive precisely the help that is relevant given any conditionals they provide. 
 
+For more information, check it out at the GitHub repository: 
+https://github.com/landoskape/conditional-parser/
+
 ## Installation
 It's on PyPI. If there's any issues, please raise one on this GitHub repo to let me know.
 ```
@@ -56,7 +59,7 @@ to the parser and additional ``*args`` and ``**kwargs`` which are used to make t
              then recreated with any required conditionals. If ``cond`` is callable, then this conditional
              argument will be added whenever ``cond(namespace.dest)`` returns ``True``.
              
-             Note: this process is repeated recursively until all necessary conditionals are added to handle
+             This process is repeated recursively until all necessary conditionals are added to handle
              potential hierarchical dependencies. 
 
 3. ``*args``: Passed to ``add_argument`` to add the conditional argument when its condition is met.
@@ -64,12 +67,13 @@ to the parser and additional ``*args`` and ``**kwargs`` which are used to make t
 
 
 ## Usage
-The [examples](examples) folder has several examples with permutations on how they can be used. See that for
-example usage and testing or building off of existing examples. 
+The [examples](https://github.com/landoskape/conditional-parser/tree/main/examples) folder has several
+examples with permutations on how they can be used. See that for example usage and testing or building off of
+existing examples. 
 
 ### Simple example of adding a conditional argument
 This simple example shows how to implement the conditional parser described in the first section above. This
-example corresponds to [readme_example](examples/readme_example.py).
+example corresponds to [readme_example](https://github.com/landoskape/conditional-parser/blob/main/examples/readme_example.py).
 ```python
 # Build a conditional argument parser (identical to ArgumentParser)
 parser = ConditionalArgumentParser(description="A parser with conditional arguments.")
@@ -90,7 +94,7 @@ parsed_args = parser.parse_args(args=args)
 ### Parallel conditionals
 This example shows how to implement a conditional parser with multiple conditional arguments in parallel. It 
 also shows how to use callable conditionals for more complex control of when to add conditional arguments. 
-This example corresponds to [parallel_example](examples/parallel_example.py).
+This example corresponds to [parallel_example](https://github.com/landoskape/conditional-parser/blob/main/examples/parallel_example.py).
 ```python
 # Build a conditional argument parser (identical to ArgumentParser)
 parser = ConditionalArgumentParser(description="A parser with parallel conditional arguments.")
@@ -140,7 +144,7 @@ parsed_args = parser.parse_args(args=args)
 
 ### Nested hierarchical conditionals
 This example shows how to implement a conditional parser with nested hierarchical conditional arguments. This
-example corresponds to [hierarchical_example](examples/hierarchical_example.py).
+example corresponds to [hierarchical_example](https://github.com/landoskape/conditional-parser/blob/main/examples/hierarchical_example.py).
 ```python
 # Build a conditional argument parser (identical to ArgumentParser)
 parser = ConditionalArgumentParser(description="A parser with hierarchical conditional arguments.")

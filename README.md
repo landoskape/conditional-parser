@@ -132,7 +132,7 @@ parser.add_conditional(dest, condition, "--mlp-layer-width", type=int, default=1
 
 # Add conditionals that are only needed for transfomers
 dest = "network_type"
-condition = "transfomer"
+condition = "transformer"
 parser.add_conditional(dest, condition, "--num-heads", type=int, default=8, help="the number of heads to use in transfomer layers")
 parser.add_conditional(dest, condition, "--kqv-bias", default=False, action="store_true", help="whether to use bias in the key/query/value matrices of the transfomer")
 # ... etc.

@@ -1,4 +1,5 @@
 import sys
+from typing import List, Any, Optional, Callable, Union
 from copy import deepcopy
 from inspect import signature
 from argparse import ArgumentParser
@@ -21,7 +22,7 @@ class ConditionalArgumentParser(ArgumentParser):
         self._conditional_kwargs = []
         self._num_conditional = 0
 
-    def parse_args(self, args=None, namespace=None):
+    def parse_args(self, args: Optional[List[str]] = None, namespace=None):
         """Parse the arguments and return the namespace."""
         # if args not provided, use sys.argv
         if args is None:
@@ -37,7 +38,7 @@ class ConditionalArgumentParser(ArgumentParser):
         # parse the arguments with the conditionals added in the dummy parser
         return ArgumentParser.parse_args(_parser, args=args, namespace=namespace)
 
-    def add_conditional(self, dest, cond, *args, **kwargs):
+    def add_conditional(self, dest, cond, *args, **kwargs) -> None:
         """
         add conditional argument that is only added when parent argument match a condition
 
@@ -61,7 +62,7 @@ class ConditionalArgumentParser(ArgumentParser):
         self._conditional_kwargs.append(kwargs)
         self._num_conditional += 1
 
-    def _prepare_conditionals(self, _parser, args, already_added):
+    def _prepare_conditionals(self, _parser: ArgumentParser, args: List[str], already_added: List[bool]) -> ArgumentParser:
         """Prepare conditional arguments to the parser through a hierarchical parse."""
         # remove help arguments for an initial parse to determine if conditionals are needed
         args = [arg for arg in args if arg not in ["-h", "--help"]]
@@ -82,7 +83,7 @@ class ConditionalArgumentParser(ArgumentParser):
         # return a parser with all conditionals added
         return _parser
 
-    def _make_callable(self, cond):
+    def _make_callable(self, cond: Union[Callable, Any]) -> Callable:
         """make a function that returns a boolean from a function or value."""
         # if cond is callable, use it as is (assuming it takes in a single argument)
         if callable(cond):
@@ -93,7 +94,7 @@ class ConditionalArgumentParser(ArgumentParser):
         # otherwise, create a function that compares the value to the provided value
         return lambda dest_value: dest_value == cond
 
-    def _conditionals_ready(self, namespace, already_added):
+    def _conditionals_ready(self, namespace, already_added) -> bool:
         """Check if all conditionals are finished."""
         # for each conditional, if it is required and not already added, return False
         for idx, parent in enumerate(self._conditional_parent):
@@ -103,7 +104,7 @@ class ConditionalArgumentParser(ArgumentParser):
         # if all required conditionals are added, return True
         return True
 
-    def _conditional_required(self, namespace, parent, already_added, idx):
+    def _conditional_required(self, namespace, parent, already_added, idx) -> bool:
         """check if a conditional is required to be added"""
         # first check if the parent exists in the namespace
         if hasattr(namespace, parent):

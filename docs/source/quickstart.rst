@@ -35,9 +35,12 @@ Adding Conditional Arguments
 
 The key method is ``add_conditional``, which takes:
 
-1. ``dest``: The destination (argument name) to check
-2. ``cond``: Either a value to compare against or a callable function
-3. Additional arguments passed to ``add_argument``
+1. ``dest``: The destination (argument name) to check. The nomenclature here is to be 
+    consistent with argparse - when an argument is made in argparse, it is stored in the
+    namespace under the name given in ``dest``.
+2. ``cond``: Either a value to compare against or a callable function that accepts the 
+    value of the dest as it's single input argument and returns a boolean. 
+3. Additional arguments passed to ``add_argument`` as usual. 
 
 Conditions can be:
 

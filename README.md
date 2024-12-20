@@ -2,6 +2,10 @@
 A simple extension to the native ArgumentParser to allow flexible conditional arguments.  
 
 [![PyPI version](https://badge.fury.io/py/conditional-parser.svg)](https://badge.fury.io/py/conditional-parser)
+[![Documentation Status](https://readthedocs.org/projects/conditional-parser/badge/?version=latest)](https://conditional-parser.readthedocs.io/en/latest/?badge=latest)
+[![Python Versions](https://img.shields.io/pypi/pyversions/conditional-parser.svg)](https://pypi.org/project/conditional-parser/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 
 The argparse module is fantastic. I love it. However, it is lacking in one particular area: the ability to
 flexibily create conditional arguments. 

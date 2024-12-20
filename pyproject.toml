@@ -4,13 +4,14 @@ build-backend = "hatchling.build"
 
 [project]
 name = "conditional-parser"
-version = "0.1.0"
+version = "0.1.1"
 authors = [
     {name = "Andrew Landau", email = "andrew+tyler+landau+getridofthisanddtheplusses@gmail.com"},
 ]
 description = "A simple package to support conditional argument parsing."
 readme = "README.md"
-requires-python = ">=3.4"
+requires-python = ">=3.7"
+dependencies = []
 license = "MIT"
 keywords = ["argparse", "conditional", "parser", "cli", "commandline", "command-line"]
 classifiers = [
@@ -18,9 +19,6 @@ classifiers = [
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3.4",
-    "Programming Language :: Python :: 3.5",
-    "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
@@ -29,7 +27,12 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
 ]
-dependencies = []
+
+[project.optional-dependencies]
+test = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+]
 
 [project.urls]
 Homepage = "https://github.com/landoskape/conditional-parser"
@@ -38,3 +41,8 @@ Homepage = "https://github.com/landoskape/conditional-parser"
 include = [
     "conditional_parser.py",
 ]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "--cov=conditional_parser --cov-report=xml --cov-report=term-missing"

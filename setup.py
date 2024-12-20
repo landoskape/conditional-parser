@@ -12,7 +12,7 @@ from setuptools import setup
 description = "A simple package to support conditional argument parsing."
 setup(
     name="conditional-parser",
-    version="0.0.2",
+    version="0.1.0",
     author="Andrew Landau",
     author_email="andrew+tyler+landau+getridofthisanddtheplusses@gmail.com",
     description=description,

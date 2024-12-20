@@ -128,3 +128,26 @@ def test_invalid_condition():
     # Test callable with wrong number of arguments
     with pytest.raises(ValueError):
         parser.add_conditional("value", lambda x, y: x > y, "--flag")
+
+
+def test_sys_argv_default():
+    """Test that the parser uses sys.argv when args=None."""
+    parser = ConditionalArgumentParser()
+    parser.add_argument("--test-flag", action="store_true")
+
+    # Store original sys.argv
+    original_argv = sys.argv
+
+    try:
+        # Modify sys.argv temporarily
+        sys.argv = ["program_name", "--test-flag"]
+        args = parser.parse_args()  # Note: not passing any args here
+        assert args.test_flag is True
+
+        # Test without flag
+        sys.argv = ["program_name"]
+        args = parser.parse_args()  # Note: not passing any args here
+        assert args.test_flag is False
+    finally:
+        # Restore original sys.argv
+        sys.argv = original_argv

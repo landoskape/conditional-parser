@@ -5,7 +5,8 @@ A simple extension to the native ArgumentParser to allow flexible conditional ar
 [![Documentation Status](https://readthedocs.org/projects/conditional-parser/badge/?version=latest)](https://conditional-parser.readthedocs.io/en/latest/?badge=latest)
 [![Python Versions](https://img.shields.io/pypi/pyversions/conditional-parser.svg)](https://pypi.org/project/conditional-parser/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
+[![Tests](https://github.com/landoskape/conditional-parser/actions/workflows/tests.yml/badge.svg)](https://github.com/landoskape/conditional-parser/actions/workflows/tests.yml)
+[![codecov](https://codecov.io/gh/landoskape/conditional-parser/branch/main/graph/badge.svg)](https://codecov.io/gh/landoskape/conditional-parser)
 
 [Full Documentation](https://conditional-parser.readthedocs.io/) | [GitHub](https://github.com/landoskape/conditional-parser) | [PyPI](https://pypi.org/project/conditional-parser/)
 
@@ -15,7 +16,7 @@ flexibily create conditional arguments.
 
 What do I mean by conditional arguments? I mean the inclusion of certain arguments that are only necessary
 given the values provided by the user for other arguments. For example, suppose you include a non-positional
-argument like: ``--use-regularization`` for a parser build to train a machine learning model. You might want
+argument like: ``--use-regularization`` for a parser built to train a machine learning model. You might want
 to include another argument: ``--regularizer-lambda`` that determines how much regularization to use, but
 only when the user includes the ``--use-regularization`` argument. This is a simple example, but it's easy to
 imagine this being extend to much more complex use cases, and even hierarchically nested conditionals. 

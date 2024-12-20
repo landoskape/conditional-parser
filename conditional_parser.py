@@ -153,11 +153,6 @@ class ConditionalArgumentParser(ArgumentParser):
         -------
         ArgumentParser
             The parser with all required conditional arguments added.
-
-        Notes
-        -----
-        This is an internal method that should not be called directly. It is used
-        by parse_args() to handle the addition of conditional arguments.
         """
         # remove help arguments for an initial parse to determine if conditionals are needed
         args = [arg for arg in args if arg not in ["-h", "--help"]]
@@ -277,8 +272,3 @@ class ConditionalArgumentParser(ArgumentParser):
 
         # otherwise return False to indicate that this conditional does not need to be added
         return False
-
-
-# copy the docstring and signature from ArgumentParser for more useful help messages
-ConditionalArgumentParser.__init__.__doc__ = ArgumentParser.__init__.__doc__
-ConditionalArgumentParser.__init__.__signature__ = signature(ArgumentParser.__init__)

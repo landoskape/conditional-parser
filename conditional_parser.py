@@ -2,18 +2,43 @@ import sys
 from typing import List, Any, Optional, Callable, Union
 from copy import deepcopy
 from inspect import signature
-from argparse import ArgumentParser
+from argparse import ArgumentParser, Namespace
 
-__version__ = "0.0.2"
+__version__ = "0.1.0"
 
 
 class ConditionalArgumentParser(ArgumentParser):
-    def __init__(self, *args, **kwargs):
-        """
-        Initialize the ConditionalArgumentParser object.
+    """An ArgumentParser that supports conditional arguments based on other argument values.
 
-        args and kwargs are passed directly to the ArgumentParser Object's initialization method.
-        See standard ArgumentParser documentation for more information.
+    This parser extends the standard ArgumentParser to allow adding arguments that only appear
+    when certain conditions are met. This is useful for creating command-line interfaces where
+    the value of one argument determines whether another argument is required.
+
+    Examples
+    --------
+    >>> parser = ConditionalArgumentParser()
+    >>> parser.add_argument('--format', choices=['json', 'csv'], default='json')
+    >>> parser.add_conditional('format', 'csv', '--delimiter',
+    ...                       help='Delimiter for CSV output')
+    >>> args = parser.parse_args(['--format', 'csv', '--delimiter', ','])
+    >>> print(args.delimiter)
+    ','
+    """
+
+    def __init__(self, *args, **kwargs):
+        """Initialize the ConditionalArgumentParser.
+
+        Parameters
+        ----------
+        *args : Any
+            Positional arguments passed to ArgumentParser
+        **kwargs : Any
+            Keyword arguments passed to ArgumentParser
+
+        Notes
+        -----
+        See the standard argparse.ArgumentParser documentation for details on
+        available initialization parameters.
         """
         super(ConditionalArgumentParser, self).__init__(*args, **kwargs)
         self._conditional_parent = []
@@ -22,8 +47,35 @@ class ConditionalArgumentParser(ArgumentParser):
         self._conditional_kwargs = []
         self._num_conditional = 0
 
-    def parse_args(self, args: Optional[List[str]] = None, namespace=None):
-        """Parse the arguments and return the namespace."""
+    def parse_args(self, args: Optional[List[str]] = None, namespace: Optional[Namespace] = None) -> Namespace:
+        """Parse command line arguments including conditional arguments.
+
+        This method extends the standard ArgumentParser.parse_args() by first evaluating
+        which conditional arguments need to be added based on the values of their parent
+        arguments, then parsing all arguments together.
+
+        Parameters
+        ----------
+        args : Optional[List[str]], default=None
+            List of strings to parse. If None, default to sys.argv[1:].
+        namespace : Optional[Namespace], default=None
+            An object to store the parsed arguments. If None, a new Namespace object is
+            created.
+
+        Returns
+        -------
+        Namespace
+            A namespace containing the parsed arguments.
+
+        Examples
+        --------
+        >>> parser = ConditionalArgumentParser()
+        >>> parser.add_argument('--format', choices=['json', 'csv'])
+        >>> parser.add_conditional('format', 'csv', '--delimiter')
+        >>> args = parser.parse_args(['--format', 'csv', '--delimiter', ','])
+        >>> print(args.delimiter)
+        ','
+        """
         # if args not provided, use sys.argv
         if args is None:
             args = sys.argv[1:]
@@ -38,17 +90,35 @@ class ConditionalArgumentParser(ArgumentParser):
         # parse the arguments with the conditionals added in the dummy parser
         return ArgumentParser.parse_args(_parser, args=args, namespace=namespace)
 
-    def add_conditional(self, dest, cond, *args, **kwargs) -> None:
-        """
-        add conditional argument that is only added when parent argument match a condition
+    def add_conditional(self, dest: str, cond: Union[Any, Callable], *args, **kwargs) -> None:
+        """Add a conditional argument to the parser.
 
-        args:
-            dest: is the destination of the parent (where to look in the namespace for conditional comparisons)
-            cond: a variable or callable function that determines whether to add this conditional argument.
-                  if callable, then it will be called on the value of dest
-                  if not callable, then it will simply be compared to the value of dest, e.g. (dest==cond)
-            *args: the arguments to add when the condition is met (via the standard add_argument method)
-            **kwargs: the keyword arguments to add when the condition is met (via the standard add_argument method)
+        This method adds an argument that is only included when the value of a parent
+        argument matches a specified condition. The condition can be either a fixed value
+        or a callable function that evaluates the parent argument's value.
+
+        Parameters
+        ----------
+        dest : str
+            The destination of the parent argument to compare.
+        cond : Union[Any, Callable]
+            A value or callable function that determines whether to add the conditional argument.
+            If callable, it will be called on the value of dest. If not callable, it will be
+            compared to the value of dest.
+        *args : Any
+            The arguments to add when the condition is met (via the standard add_argument method).
+        **kwargs : Any
+            The keyword arguments to add when the condition is met (via the standard add_argument method).
+
+        Examples
+        --------
+        >>> parser = ConditionalArgumentParser()
+        >>> parser.add_argument('--format', choices=['json', 'csv'])
+        >>> parser.add_conditional('format', 'csv', '--delimiter',
+        ...                       help='Delimiter for CSV output')
+        >>> args = parser.parse_args(['--format', 'csv', '--delimiter', ','])
+        >>> print(args.delimiter)
+        ','
         """
         # attempt to add the conditional argument to a dummy parser to check for errors right away
         _dummy = deepcopy(self)
@@ -63,7 +133,32 @@ class ConditionalArgumentParser(ArgumentParser):
         self._num_conditional += 1
 
     def _prepare_conditionals(self, _parser: ArgumentParser, args: List[str], already_added: List[bool]) -> ArgumentParser:
-        """Prepare conditional arguments to the parser through a hierarchical parse."""
+        """Recursively prepare and add conditional arguments to the parser.
+
+        This method performs a hierarchical parse of the arguments, determining which
+        conditional arguments should be added based on the values of their parent
+        arguments. It continues recursively until all required conditional arguments
+        have been added to the parser.
+
+        Parameters
+        ----------
+        _parser : ArgumentParser
+            The parser to which conditional arguments will be added.
+        args : List[str]
+            List of command line arguments to parse.
+        already_added : List[bool]
+            List tracking which conditional arguments have already been added.
+
+        Returns
+        -------
+        ArgumentParser
+            The parser with all required conditional arguments added.
+
+        Notes
+        -----
+        This is an internal method that should not be called directly. It is used
+        by parse_args() to handle the addition of conditional arguments.
+        """
         # remove help arguments for an initial parse to determine if conditionals are needed
         args = [arg for arg in args if arg not in ["-h", "--help"]]
         namespace = ArgumentParser.parse_known_args(_parser, args=args)[0]
@@ -84,7 +179,33 @@ class ConditionalArgumentParser(ArgumentParser):
         return _parser
 
     def _make_callable(self, cond: Union[Callable, Any]) -> Callable:
-        """make a function that returns a boolean from a function or value."""
+        """Convert a condition into a callable function.
+
+        This method takes either a callable function or a value and returns a callable
+        that can be used to evaluate whether a conditional argument should be added.
+
+        Parameters
+        ----------
+        cond : Union[Callable, Any]
+            Either a callable that takes one argument and returns a boolean, or
+            a value that will be compared for equality with the parent argument's value.
+
+        Returns
+        -------
+        Callable
+            A function that takes one argument and returns a boolean.
+
+        Raises
+        ------
+        ValueError
+            If cond is callable but doesn't accept exactly one argument.
+
+        Notes
+        -----
+        If cond is already callable, it must take exactly one argument.
+        If cond is not callable, this method returns a function that compares
+        its input to cond for equality.
+        """
         # if cond is callable, use it as is (assuming it takes in a single argument)
         if callable(cond):
             if len(signature(cond).parameters.values()) != 1:
@@ -94,8 +215,22 @@ class ConditionalArgumentParser(ArgumentParser):
         # otherwise, create a function that compares the value to the provided value
         return lambda dest_value: dest_value == cond
 
-    def _conditionals_ready(self, namespace, already_added) -> bool:
-        """Check if all conditionals are finished."""
+    def _conditionals_ready(self, namespace: Namespace, already_added: List[bool]) -> bool:
+        """Check if all required conditional arguments have been added.
+
+        Parameters
+        ----------
+        namespace : Namespace
+            The namespace containing the current parsed arguments.
+        already_added : List[bool]
+            List tracking which conditional arguments have already been added.
+
+        Returns
+        -------
+        bool
+            True if all required conditional arguments have been added,
+            False otherwise.
+        """
         # for each conditional, if it is required and not already added, return False
         for idx, parent in enumerate(self._conditional_parent):
             if self._conditional_required(namespace, parent, already_added, idx):
@@ -104,8 +239,33 @@ class ConditionalArgumentParser(ArgumentParser):
         # if all required conditionals are added, return True
         return True
 
-    def _conditional_required(self, namespace, parent, already_added, idx) -> bool:
-        """check if a conditional is required to be added"""
+    def _conditional_required(self, namespace: Namespace, parent: str, already_added: List[bool], idx: int) -> bool:
+        """Check if a specific conditional argument needs to be added.
+
+        Parameters
+        ----------
+        namespace : Namespace
+            The namespace containing the current parsed arguments.
+        parent : str
+            The destination name of the parent argument.
+        already_added : List[bool]
+            List tracking which conditional arguments have already been added.
+        idx : int
+            Index of the conditional argument being checked.
+
+        Returns
+        -------
+        bool
+            True if the conditional argument needs to be added,
+            False otherwise.
+
+        Notes
+        -----
+        This method checks if:
+        1. The parent argument exists in the namespace
+        2. The conditional argument hasn't already been added
+        3. The condition function evaluates to True for the parent's value
+        """
         # first check if the parent exists in the namespace
         if hasattr(namespace, parent):
             # then check if this conditional has already been added

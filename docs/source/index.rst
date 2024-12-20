@@ -38,6 +38,7 @@ Quick Example
     parser = ConditionalArgumentParser()
     parser.add_argument("--use-regularization", action="store_true")
     
+    # Will only add if --use-regularization is used, e.g. if use_regularization is set to True
     parser.add_conditional(
         "use_regularization", True,
         "--regularizer-lambda", 

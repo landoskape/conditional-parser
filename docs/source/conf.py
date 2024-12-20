@@ -40,3 +40,11 @@ intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "argparse": ("https://docs.python.org/3/library/argparse.html", None),
 }
+
+html_context = {
+    "display_github": True,
+    "github_user": "landoskape",
+    "github_repo": "conditional-parser",
+    "github_version": "main",
+    "conf_py_path": "/docs/source/",
+}

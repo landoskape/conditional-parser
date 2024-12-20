@@ -7,6 +7,9 @@ A simple extension to the native ArgumentParser to allow flexible conditional ar
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 
+[Full Documentation](https://conditional-parser.readthedocs.io/) | [GitHub](https://github.com/landoskape/conditional-parser) | [PyPI](https://pypi.org/project/conditional-parser/)
+
+
 The argparse module is fantastic. I love it. However, it is lacking in one particular area: the ability to
 flexibily create conditional arguments. 
 
@@ -24,6 +27,16 @@ messages such that users can receive precisely the help that is relevant given a
 
 For more information, check it out at the GitHub repository: 
 https://github.com/landoskape/conditional-parser/
+
+## Documentation
+
+Full documentation, is available at: https://conditional-parser.readthedocs.io/
+
+The documentation includes:
+- Complete API reference
+- Detailed examples
+- Installation instructions
+- Quick start guide
 
 ## Installation
 It's on PyPI. If there's any issues, please raise one on this GitHub repo to let me know.

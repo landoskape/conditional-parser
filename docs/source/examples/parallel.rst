@@ -1,6 +1,3 @@
-Parallel Conditionals
-===================
-
 This example demonstrates using multiple conditional arguments in parallel, triggered by different values of the same parent argument.
 
 .. code-block:: python
@@ -36,7 +33,6 @@ This example demonstrates using multiple conditional arguments in parallel, trig
                          help="Parameter X for datasets 3 and 4")
 
 Key Features Demonstrated
------------------------
 
 * Multiple conditionals can depend on the same parent argument
 * Different values of the parent can trigger different conditionals

@@ -1,8 +1,8 @@
 Quick Start Guide
-===============
+=================
 
 Basic Usage
-----------
+-----------
 
 The ConditionalArgumentParser extends Python's ArgumentParser to allow arguments that only appear based on other argument values.
 
@@ -31,16 +31,35 @@ Here's a simple example:
     )
 
 Adding Conditional Arguments
--------------------------
+----------------------------
 
-The key method is ``add_conditional``, which takes:
+The key method is ``add_conditional``, which takes the following arguments:
 
-1. ``dest``: The destination (argument name) to check. The nomenclature here is to be 
-    consistent with argparse - when an argument is made in argparse, it is stored in the
-    namespace under the name given in ``dest``.
-2. ``cond``: Either a value to compare against or a callable function that accepts the 
-    value of the dest as it's single input argument and returns a boolean. 
+1. ``dest``: The destination (argument name) to check. 
+    The ``dest`` name is the same one that you would use to retrieve the argument value
+    from the output of the parser. The nomenclature is intended to be consistent with
+    argparse - when an argument is made in argparse, it is stored under the name
+    designated in ``dest``.
+    
+    .. code-block:: python
+        
+        import ArgumentParser from argparse
+        parser = ArgumentParser()
+        parser.add_argument("--use-regularization", action="store_true", help="Uses regularization if included.")
+        args = parser.parse_args(["--use-regularization"])
+
+        # Argument parser will store the value of "--use-regularization"
+        # in the namespace under the name "use_regularization"
+        # This is what the ``dest`` argument refers to.
+        args.use_regularization  # True
+    
+    So if you want to add a conditional argument that is only added when the
+    ``--use-regularization`` argument is included, you would set ``dest="use_regularization"``.
+
+2. ``cond``: The condition that ``dest`` has to meet for the conditional argument to be added. 
+    Either a value to compare against or a callable function that accepts the value of the dest as it's single input argument and returns a boolean. 
 3. Additional arguments passed to ``add_argument`` as usual. 
+    These are the same arguments that you would pass to ``add_argument`` in argparse, and will be passed to the parser using parser.add_argument() whenever the condition is met.
 
 Conditions can be:
 
@@ -49,7 +68,7 @@ Conditions can be:
 * Custom function: ``cond=lambda x: x in ["value1", "value2"]``
 
 Help Messages
-------------
+-------------
 
 Help messages automatically adjust to show only relevant arguments:
 

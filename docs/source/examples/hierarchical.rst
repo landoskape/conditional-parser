@@ -1,6 +1,3 @@
-Hierarchical Conditionals
-=======================
-
 This example shows how to create nested conditional arguments, where one conditional argument can trigger additional conditional arguments.
 
 .. code-block:: python
@@ -37,7 +34,6 @@ This example shows how to create nested conditional arguments, where one conditi
                          help="Parameter B for curriculum2")
 
 Understanding the Hierarchy
--------------------------
 
 1. ``--use-curriculum`` is the top-level flag
 2. When True, it enables the ``--curriculum`` argument

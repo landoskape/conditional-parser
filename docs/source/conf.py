@@ -13,7 +13,7 @@ sys.path.insert(0, os.path.abspath("../.."))
 project = "Conditional Parser"
 copyright = "2024, Andrew T. Landau"
 author = "Andrew T. Landau"
-release = "0.0.2"
+release = "0.1.2"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -23,6 +23,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
     "sphinx.ext.intersphinx",
+    "sphinx_design",
 ]
 
 templates_path = ["_templates"]
@@ -38,7 +39,7 @@ html_static_path = ["_static"]
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
-    "argparse": ("https://docs.python.org/3/library/argparse.html", None),
+    # "argparse": ("https://docs.python.org/3/library/argparse.html", None),
 }
 
 html_context = {

@@ -1,6 +1,3 @@
-Basic Example
-============
-
 This example shows the simplest use case for conditional arguments - adding an argument that only appears when a flag is set.
 
 .. code-block:: python
@@ -26,8 +23,7 @@ This example shows the simplest use case for conditional arguments - adding an a
         help="The lambda value for the regularizer."
     )
 
-Usage Examples
--------------
+Usage Examples:
 
 Without regularization:
 

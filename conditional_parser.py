@@ -4,7 +4,7 @@ from copy import deepcopy
 from inspect import signature
 from argparse import ArgumentParser, Namespace
 
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 
 
 class ConditionalArgumentParser(ArgumentParser):

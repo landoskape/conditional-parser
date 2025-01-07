@@ -1,26 +1,21 @@
 Conditional Parser
-=================
+==================
 
-A flexible extension to Python's ArgumentParser for conditional arguments.
+A flexible extension to Python's ``ArgumentParser`` that enables dynamic, conditional command-line arguments - arguments that only appear based on the values of other arguments.
+
+The argparse module is fantastic, but it lacks the ability to flexibly create conditional arguments. While the native ``ArgumentParser`` supports the ability to make a single subcommand, it does not have the ability to make multiple conditional arguments in parallel, in hierarchical structures, or with complex conditional logic. The ``ConditionalArgumentParser`` extends the native ``ArgumentParser`` to support these features while maintaining the familiar interface.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Contents:
 
    installation
    quickstart
    examples/index
-   api/index
-
-About
------
-
-The Conditional Parser package extends Python's native ArgumentParser to enable dynamic, 
-conditional command-line arguments - arguments that only appear based on the values of 
-other arguments.
+   api
 
 Key Features
------------
+------------
 
 * Seamless extension of Python's ArgumentParser
 * Support for conditional arguments based on other argument values
@@ -29,7 +24,9 @@ Key Features
 * Compatible with existing ArgumentParser usage
 
 Quick Example
-------------
+-------------
+
+Suppose your parser includes a ``--use-regularization`` flag for training a machine learning model. When this flag is used, you'd probably want to include another argument ``--regularizer-lambda`` to control the regularization strength - but this parameter is only relevant when regularization is enabled. With ``ConditionalArgumentParser``, you can easily add this conditional argument.
 
 .. code-block:: python
 
@@ -38,10 +35,12 @@ Quick Example
     parser = ConditionalArgumentParser()
     parser.add_argument("--use-regularization", action="store_true")
     
-    # Will only add if --use-regularization is used, e.g. if use_regularization is set to True
+    # Will only add if --use-regularization is used
+    # E.g. if args.use_regularization == True
     parser.add_conditional(
-        "use_regularization", True,
-        "--regularizer-lambda", 
+        "use_regularization", True, # parent / condition
+        "--regularizer-lambda", # conditional argument
+        # parameters for the conditional argument - these are totally normal!
         type=float, 
         default=0.01
     )

@@ -31,7 +31,7 @@ https://github.com/landoskape/conditional-parser/
 
 ## Documentation
 
-Full documentation, is available at: https://conditional-parser.readthedocs.io/
+Full documentation is available at: https://conditional-parser.readthedocs.io/
 
 The documentation includes:
 - Complete API reference

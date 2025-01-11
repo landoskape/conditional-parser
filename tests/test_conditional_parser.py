@@ -43,7 +43,12 @@ def test_callable_conditional():
     """Test conditional argument with callable condition."""
     parser = ConditionalArgumentParser()
     parser.add_argument("--add_conditional", type=str, default="False")
-    parser.add_conditional("add_conditional", lambda x: x.lower() == "true", "--extra-arg", action="store_true")
+    parser.add_conditional(
+        "add_conditional",
+        lambda x: x.lower() == "true",
+        "--extra-arg",
+        action="store_true",
+    )
 
     # Test threshold above condition
     args = parser.parse_args(["--add_conditional", "True", "--extra-arg"])
@@ -61,7 +66,9 @@ def test_hierarchical_conditionals():
     """Test nested conditional arguments."""
     parser = ConditionalArgumentParser()
     parser.add_argument("--use-model", action="store_true")
-    parser.add_conditional("use_model", True, "--model-type", choices=["cnn", "rnn"], required=True)
+    parser.add_conditional(
+        "use_model", True, "--model-type", choices=["cnn", "rnn"], required=True
+    )
     parser.add_conditional("model_type", "cnn", "--kernel-size", type=int, default=3)
     parser.add_conditional("model_type", "rnn", "--hidden-size", type=int, default=128)
 

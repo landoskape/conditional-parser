@@ -143,11 +143,15 @@ class ConditionalArgumentParser(ArgumentParser):
             _dummy = deepcopy(self)
             _dummy.add_argument(*args, **kwargs)
         except Exception as e:
-            raise ValueError(f"Conditional argument is incompatible with the parser. Error: {e}")
+            raise ValueError(
+                f"Conditional argument is incompatible with the parser. Error: {e}"
+            )
 
         # if it passes, store the details to the conditional argument
         if not isinstance(dest, str):
-            msg = "dest must be a string corresponding to one of the destination attributes"
+            msg = (
+                "dest must be a string corresponding to one of the destination attributes"
+            )
             raise ValueError(msg)
 
         self._conditional_parent.append(dest)
@@ -194,7 +198,9 @@ class ConditionalArgumentParser(ArgumentParser):
             for i, parent in enumerate(self._conditional_parent):
                 if self._conditional_required(namespace, parent, already_added, i):
                     # add conditional argument
-                    _parser.add_argument(*self._conditional_args[i], **self._conditional_kwargs[i])
+                    _parser.add_argument(
+                        *self._conditional_args[i], **self._conditional_kwargs[i]
+                    )
                     already_added[i] = True
 
             # recursively call the function until all conditionals are added
@@ -272,7 +278,9 @@ class ConditionalArgumentParser(ArgumentParser):
         # if cond is callable, use it as is (assuming it takes in a single argument)
         if callable(cond):
             if len(signature(cond).parameters.values()) != 1:
-                raise ValueError("If providing a callable for the condition, it must take 1 argument.")
+                raise ValueError(
+                    "If providing a callable for the condition, it must take 1 argument."
+                )
             return cond
 
         # otherwise, create a function that compares the value to the provided value
@@ -294,7 +302,9 @@ class ConditionalArgumentParser(ArgumentParser):
             message = f"(Available when {parent}={cond})"
         return message
 
-    def _conditionals_ready(self, namespace: Namespace, already_added: List[bool]) -> bool:
+    def _conditionals_ready(
+        self, namespace: Namespace, already_added: List[bool]
+    ) -> bool:
         """Check if all required conditional arguments have been added to the parser.
 
         Parameters

@@ -8,11 +8,23 @@ from conditional_parser import ConditionalArgumentParser
 
 def main(example):
     parser = ConditionalArgumentParser(description="A parser with conditional arguments.")
-    parser.add_argument("--use-regularization", default=False, action="store_true", help="Uses regularization if included.")
+    parser.add_argument(
+        "--use-regularization",
+        default=False,
+        action="store_true",
+        help="Uses regularization if included.",
+    )
 
     dest = "use_regularization"
     condition = True
-    parser.add_conditional(dest, condition, "--regularizer-lambda", type=float, default=0.01, help="The lambda value for the regularizer.")
+    parser.add_conditional(
+        dest,
+        condition,
+        "--regularizer-lambda",
+        type=float,
+        default=0.01,
+        help="The lambda value for the regularizer.",
+    )
 
     # Parse the arguments -- without the conditional
     if example == 0:
@@ -54,6 +66,10 @@ def main(example):
 if __name__ == "__main__":
     main(0)  # Conditional arguments not included
     main(1)  # With conditional arguments
-    main(2)  # Conditional arguments set without being included (will generate an error, comment out to see example 3, 4)
-    main(3)  # Help message without conditional (will end the program, comment out to see example 4)
+    main(
+        2
+    )  # Conditional arguments set without being included (will generate an error, comment out to see example 3, 4)
+    main(
+        3
+    )  # Help message without conditional (will end the program, comment out to see example 4)
     main(4)  # Help message with conditional

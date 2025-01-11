@@ -4,7 +4,7 @@ from copy import deepcopy
 from inspect import signature
 from argparse import ArgumentParser, Namespace
 
-__version__ = "0.1.3"
+__version__ = "0.2.0"
 
 
 class ConditionalArgumentParser(ArgumentParser):
@@ -43,6 +43,7 @@ class ConditionalArgumentParser(ArgumentParser):
         super(ConditionalArgumentParser, self).__init__(*args, **kwargs)
         self._conditional_parent = []
         self._conditional_condition = []
+        self._conditional_message = []
         self._conditional_args = []
         self._conditional_kwargs = []
         self._num_conditional = 0
@@ -138,13 +139,17 @@ class ConditionalArgumentParser(ArgumentParser):
         ','
         """
         # attempt to add the conditional argument to a dummy parser to check for errors right away
-        _dummy = deepcopy(self)
-        _dummy.add_argument(*args, **kwargs)
+        try:
+            _dummy = deepcopy(self)
+            _dummy.add_argument(*args, **kwargs)
+        except Exception as e:
+            raise ValueError(f"Conditional argument is incompatible with the parser. Error: {e}")
 
         # if it passes, store the details to the conditional argument
         assert type(dest) == str, "dest must be a string corresponding to one of the destination attributes"
         self._conditional_parent.append(dest)
         self._conditional_condition.append(self._make_callable(cond))
+        self._conditional_message.append(self._callable_representation(dest, cond))
         self._conditional_args.append(args)
         self._conditional_kwargs.append(kwargs)
         self._num_conditional += 1
@@ -196,21 +201,41 @@ class ConditionalArgumentParser(ArgumentParser):
         return _parser
 
     def _prepare_help(self, _parser: ArgumentParser) -> ArgumentParser:
-        """Prepare the help parser to show all arguments including conditionals."""
+        """Prepare the help parser to show all conditional arguments in the help output.
+
+        This method adds all conditional arguments to the parser with modified help text
+        that indicates when each argument is available. This ensures users can see all
+        possible arguments when requesting help, even if some are conditional.
+
+        Parameters
+        ----------
+        _parser : ArgumentParser
+            The parser to which help text will be added.
+
+        Returns
+        -------
+        ArgumentParser
+            The parser with all conditional arguments and their help text added.
+
+        Notes
+        -----
+        The help text for each conditional argument is modified to include information
+        about when the argument becomes available, based on its parent argument's value.
+        """
         zipped_conditionals = zip(
-            self._conditional_parent,
-            self._conditional_condition,
+            self._conditional_message,
             self._conditional_args,
             self._conditional_kwargs,
         )
-        for parent, condition, args, kwargs in zipped_conditionals:
-            # Embellish the help message
-            if callable(condition):
-                message = f"(Only included when {parent} meets the desired condition)"
+        for message, args, kwargs in zipped_conditionals:
+            # Combine with existing help message
+            existing_help = kwargs.get("help", "")
+            if existing_help:
+                kwargs["help"] = f"{existing_help} :: {message}"
             else:
-                message = f"(Only included when {parent}={condition})"
-            kwargs["help"] = f"{kwargs.get('help', '')} -- {message}"
+                kwargs["help"] = message
             _parser.add_argument(*args, **kwargs)
+
         return _parser
 
     def _make_callable(self, cond: Union[Callable, Any]) -> Callable:
@@ -250,8 +275,24 @@ class ConditionalArgumentParser(ArgumentParser):
         # otherwise, create a function that compares the value to the provided value
         return lambda dest_value: dest_value == cond
 
+    def _callable_representation(self, parent: str, cond: Union[Callable, Any]) -> str:
+        """Get a string representation of a callable object.
+
+        This method takes a callable object and returns a string representation of it.
+        If the callable is a lambda function, it returns the lambda definition.
+        Otherwise, it returns the callable's name.
+        """
+        if callable(cond):
+            if cond.__name__ != "<lambda>":
+                message = f"(Available when {cond.__name__}({parent})=True)"
+            else:
+                message = f"(Available when lambda function condition on {parent} is met)"
+        else:
+            message = f"(Available when {parent}={cond})"
+        return message
+
     def _conditionals_ready(self, namespace: Namespace, already_added: List[bool]) -> bool:
-        """Check if all required conditional arguments have been added.
+        """Check if all required conditional arguments have been added to the parser.
 
         Parameters
         ----------
@@ -265,6 +306,15 @@ class ConditionalArgumentParser(ArgumentParser):
         bool
             True if all required conditional arguments have been added,
             False otherwise.
+
+        Notes
+        -----
+        This method checks each conditional argument to determine if:
+        1. Its parent argument exists in the namespace
+        2. The conditional hasn't been added yet
+        3. The condition for adding it is met
+        If any conditional meets all these criteria, it returns False to indicate
+        more processing is needed.
         """
         # for each conditional, if it is required and not already added, return False
         for idx, parent in enumerate(self._conditional_parent):

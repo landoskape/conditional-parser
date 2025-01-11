@@ -20,8 +20,9 @@ Key Features
 * Seamless extension of Python's ArgumentParser
 * Support for conditional arguments based on other argument values
 * Hierarchical conditional dependencies
-* Maintains helpful error messages and help text
 * Compatible with existing ArgumentParser usage
+* Comprehensive help messages showing all possible arguments
+* Clear documentation of when conditional arguments become available
 
 Quick Example
 -------------

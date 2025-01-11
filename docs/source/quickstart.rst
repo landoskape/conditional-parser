@@ -70,14 +70,14 @@ Conditions can be:
 Help Messages
 -------------
 
-Help messages automatically adjust to show only relevant arguments:
+Help messages show all possible conditional arguments with information about when they become available:
 
 .. code-block:: bash
 
-    # Without --use-regularization:
     $ python script.py --help
-    usage: script.py [-h] [--use-regularization]
-
-    # With --use-regularization:
-    $ python script.py --use-regularization --help
     usage: script.py [-h] [--use-regularization] [--regularizer-lambda LAMBDA]
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      --use-regularization  Uses regularization if included.
+      --regularizer-lambda  The lambda value for the regularizer. (Available when use_regularization=True)

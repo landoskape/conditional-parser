@@ -13,7 +13,7 @@ sys.path.insert(0, os.path.abspath("../.."))
 project = "Conditional Parser"
 copyright = "2024, Andrew T. Landau"
 author = "Andrew T. Landau"
-release = "0.1.3"
+release = "0.2.0"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

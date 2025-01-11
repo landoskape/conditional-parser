@@ -23,8 +23,6 @@ imagine this being extend to much more complex use cases, and even hierarchicall
 
 The ``ConditionalArgumentParser`` contained in this package extends python's native ``ArgumentParser``. It
 works almost identically, but allows the addition of conditional arguments in an intuitive and simple way.
-In addition, the way ``ConditionalArgumentParser`` is structured maintains the usefulness of ``-help`` 
-messages such that users can receive precisely the help that is relevant given any conditionals they provide. 
 
 For more information, check it out at the GitHub repository: 
 https://github.com/landoskape/conditional-parser/
@@ -58,9 +56,7 @@ The user can add as many of these as they want, with arbitrary complexity and hi
 
 When the standard ``parse_args()`` method is called, it builds a namespace from the given arguments, checks
 whether conditions are met, adds necessary conditional arguments, then does this again recursively until no
-more conditional arguments are needed. In addition, it will ignore ``-h`` or ``--help`` arguments until all 
-required conditional arguments are added such that the user receives an accurate and fully informative help
-message given any of the conditionals they set.   
+more conditional arguments are needed. If the users asks for help with the "-h" or "--help" arguments, it will show all conditional arguments and their help messages, including an extra message that indicates when each conditional argument is available. 
 
 ### How to add a conditional argument
 To add a conditional argument, use the ``add_conditional`` method:
@@ -207,8 +203,7 @@ are two downsides with most of the ones I found:
    pretty simple and straightforward.
 2. They break the usefulness of help messages. I think this is super important because I probably won't
    remember exactly what I coded a month from now, much less a year or more. So keeping help messages as 
-   functional as possible is important. This package could probably use some improvements in adding info 
-   about possible conditional arguments to help messages, but I haven't included that yet. 
+   functional as possible is important. 
 
 ## Contributing
 I'm happy to take issues or pull requests, let me know if you have any ideas on how to make this better or

@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [future development] - Unreleased
+As of now, this doesn't work with subparsers. I'm working on it. If you want this
+functionality and it isn't there yet, let me know. But - note that you can use 
+conditional arguments to completely replace subparsers...
+
+## [0.2.1] - Unreleased
+
+### Added
+Tests for more use cases. 
+Explanation of how to handle subparser-like functionality. 
+
+
 ## [0.2.0] - 2025-01-11
 
 ### Added

@@ -14,8 +14,8 @@ class ConditionalArgumentParser(ArgumentParser):
     when certain conditions are met. This is useful for creating command-line interfaces where
     the value of one argument determines whether another argument is required.
 
-    Examples
-    --------
+    Example
+    -------
     >>> parser = ConditionalArgumentParser()
     >>> parser.add_argument('--format', choices=['json', 'csv'], default='json')
     >>> parser.add_conditional('format', 'csv', '--delimiter',
@@ -47,7 +47,11 @@ class ConditionalArgumentParser(ArgumentParser):
         self._conditional_kwargs = []
         self._num_conditional = 0
 
-    def parse_args(self, args: Optional[List[str]] = None, namespace: Optional[Namespace] = None) -> Namespace:
+    def parse_args(
+        self,
+        args: Optional[List[str]] = None,
+        namespace: Optional[Namespace] = None,
+    ) -> Namespace:
         """Parse command line arguments including conditional arguments.
 
         This method extends the standard ArgumentParser.parse_args() by first evaluating
@@ -80,17 +84,30 @@ class ConditionalArgumentParser(ArgumentParser):
         if args is None:
             args = sys.argv[1:]
 
-        # make a list of booleans to track which conditionals have been added
-        already_added = [False for _ in range(self._num_conditional)]
-
-        # prepare the conditionals in a dummy parser so the user can reuse self
         _parser = deepcopy(self)
-        _parser = self._prepare_conditionals(_parser, args, already_added)
+
+        if self.add_help and ("--help" in args or "-h" in args):
+            # if the user is asking for help (and we're using the standard help system)
+            # then we need to show all arguments including conditionals
+            _parser = self._prepare_help(_parser)
+
+        else:
+            # make a list of booleans to track which conditionals have been added
+            already_added = [False for _ in range(self._num_conditional)]
+
+            # prepare the conditionals in a dummy parser so the user can reuse self
+            _parser = self._prepare_conditionals(_parser, args, already_added)
 
         # parse the arguments with the conditionals added in the dummy parser
         return ArgumentParser.parse_args(_parser, args=args, namespace=namespace)
 
-    def add_conditional(self, dest: str, cond: Union[Any, Callable], *args, **kwargs) -> None:
+    def add_conditional(
+        self,
+        dest: str,
+        cond: Union[Any, Callable],
+        *args,
+        **kwargs,
+    ) -> None:
         """Add a conditional argument to the parser.
 
         This method adds an argument that is only included when the value of a parent
@@ -132,7 +149,12 @@ class ConditionalArgumentParser(ArgumentParser):
         self._conditional_kwargs.append(kwargs)
         self._num_conditional += 1
 
-    def _prepare_conditionals(self, _parser: ArgumentParser, args: List[str], already_added: List[bool]) -> ArgumentParser:
+    def _prepare_conditionals(
+        self,
+        _parser: ArgumentParser,
+        args: List[str],
+        already_added: List[bool],
+    ) -> ArgumentParser:
         """Recursively prepare and add conditional arguments to the parser.
 
         This method performs a hierarchical parse of the arguments, determining which
@@ -171,6 +193,24 @@ class ConditionalArgumentParser(ArgumentParser):
             _parser = self._prepare_conditionals(_parser, args, already_added)
 
         # return a parser with all conditionals added
+        return _parser
+
+    def _prepare_help(self, _parser: ArgumentParser) -> ArgumentParser:
+        """Prepare the help parser to show all arguments including conditionals."""
+        zipped_conditionals = zip(
+            self._conditional_parent,
+            self._conditional_condition,
+            self._conditional_args,
+            self._conditional_kwargs,
+        )
+        for parent, condition, args, kwargs in zipped_conditionals:
+            # Embellish the help message
+            if callable(condition):
+                message = f"(Only included when {parent} meets the desired condition)"
+            else:
+                message = f"(Only included when {parent}={condition})"
+            kwargs["help"] = f"{kwargs.get('help', '')} -- {message}"
+            _parser.add_argument(*args, **kwargs)
         return _parser
 
     def _make_callable(self, cond: Union[Callable, Any]) -> Callable:

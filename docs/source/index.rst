@@ -45,3 +45,34 @@ Suppose your parser includes a ``--use-regularization`` flag for training a mach
         type=float, 
         default=0.01
     )
+
+Design Note
+-----------
+
+This package does not work with subparsers. If you include a subparser, any conditional 
+arguments will be ignored. I'm working on a solution for this, but it's not yet
+implemented. Just note that if you need to use a subparser-like system, you can actually
+completely replace subparsers with conditional arguments, the API just looks a bit
+different. Here's an example:
+
+.. code-block:: python
+
+    parser = ArgumentParser()
+    parser.add_argument("--no-subparsers-format", choices=["json", "csv"])
+    subparsers = parser.add_subparsers()
+
+    sub1 = subparsers.add_parser("command1")
+    sub1.add_argument("--format", choices=["json", "csv"])
+
+    # The above is (almost) equivalent to:
+    parser = ConditionalArgumentParser()
+    parser.add_argument("--no-subparsers-format", choices=["json", "csv"])
+    parser.add_argument("--subparser", type=str, choices=["command1"], required=False)
+    parser.add_conditional(
+        "subparser",
+        "command1",
+        "--format",
+        choices=["json", "csv"]
+    )
+
+

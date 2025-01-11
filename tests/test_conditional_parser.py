@@ -50,9 +50,22 @@ def test_callable_conditional():
         action="store_true",
     )
 
+    def condition(x):
+        return x.lower() == "true"
+
+    parser.add_conditional(
+        "add_conditional",
+        condition,
+        "--another-arg",
+        action="store_true",
+    )
+
     # Test threshold above condition
     args = parser.parse_args(["--add_conditional", "True", "--extra-arg"])
     assert args.extra_arg
+
+    args = parser.parse_args(["--add_conditional", "True", "--another-arg"])
+    assert args.another_arg
 
     # Test threshold below condition (should raise error if trying to use conditional)
     with pytest.raises(SystemExit):
@@ -188,3 +201,17 @@ def test_sys_argv_default():
     finally:
         # Restore original sys.argv
         sys.argv = original_argv
+
+
+def test_bad_conditional():
+    """Test that the parser raises an error when a conditional argument is not valid."""
+    parser = ConditionalArgumentParser()
+    parser.add_argument("--value", action="store_true")
+
+    with pytest.raises(ValueError):
+        # Shouldn't be able to add a conditional argument that already exists
+        parser.add_conditional("value", True, "--value")
+
+    with pytest.raises(ValueError):
+        # Shouldn't be able to add a conditional argument that is not a string
+        parser.add_conditional(42, True, "--not-a-real-arg")

@@ -146,7 +146,10 @@ class ConditionalArgumentParser(ArgumentParser):
             raise ValueError(f"Conditional argument is incompatible with the parser. Error: {e}")
 
         # if it passes, store the details to the conditional argument
-        assert type(dest) == str, "dest must be a string corresponding to one of the destination attributes"
+        if not isinstance(dest, str):
+            msg = "dest must be a string corresponding to one of the destination attributes"
+            raise ValueError(msg)
+
         self._conditional_parent.append(dest)
         self._conditional_condition.append(self._make_callable(cond))
         self._conditional_message.append(self._callable_representation(dest, cond))
@@ -324,7 +327,13 @@ class ConditionalArgumentParser(ArgumentParser):
         # if all required conditionals are added, return True
         return True
 
-    def _conditional_required(self, namespace: Namespace, parent: str, already_added: List[bool], idx: int) -> bool:
+    def _conditional_required(
+        self,
+        namespace: Namespace,
+        parent: str,
+        already_added: List[bool],
+        idx: int,
+    ) -> bool:
         """Check if a specific conditional argument needs to be added.
 
         Parameters

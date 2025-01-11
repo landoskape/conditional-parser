@@ -7,6 +7,7 @@ A simple extension to the native ArgumentParser to allow flexible conditional ar
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Tests](https://github.com/landoskape/conditional-parser/actions/workflows/tests.yml/badge.svg)](https://github.com/landoskape/conditional-parser/actions/workflows/tests.yml)
 [![codecov](https://codecov.io/gh/landoskape/conditional-parser/branch/main/graph/badge.svg)](https://codecov.io/gh/landoskape/conditional-parser)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 [Full Documentation](https://conditional-parser.readthedocs.io/) | [GitHub](https://github.com/landoskape/conditional-parser) | [PyPI](https://pypi.org/project/conditional-parser/)
 

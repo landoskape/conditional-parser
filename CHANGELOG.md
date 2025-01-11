@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Improved error handling in `add_conditional` method
 - Updated documentation to reflect new help system behavior
 - Code formatting improvements for better readability
+- Added black code formatter to project
 
 ### Removed
 - Removed behavior where help messages would only show currently available arguments

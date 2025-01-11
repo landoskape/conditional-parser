@@ -43,7 +43,12 @@ def test_callable_conditional():
     """Test conditional argument with callable condition."""
     parser = ConditionalArgumentParser()
     parser.add_argument("--add_conditional", type=str, default="False")
-    parser.add_conditional("add_conditional", lambda x: x.lower() == "true", "--extra-arg", action="store_true")
+    parser.add_conditional(
+        "add_conditional",
+        lambda x: x.lower() == "true",
+        "--extra-arg",
+        action="store_true",
+    )
 
     # Test threshold above condition
     args = parser.parse_args(["--add_conditional", "True", "--extra-arg"])
@@ -61,7 +66,9 @@ def test_hierarchical_conditionals():
     """Test nested conditional arguments."""
     parser = ConditionalArgumentParser()
     parser.add_argument("--use-model", action="store_true")
-    parser.add_conditional("use_model", True, "--model-type", choices=["cnn", "rnn"], required=True)
+    parser.add_conditional(
+        "use_model", True, "--model-type", choices=["cnn", "rnn"], required=True
+    )
     parser.add_conditional("model_type", "cnn", "--kernel-size", type=int, default=3)
     parser.add_conditional("model_type", "rnn", "--hidden-size", type=int, default=128)
 
@@ -103,21 +110,44 @@ def test_help_text():
     parser.add_argument("--mode", choices=["simple", "advanced"])
     parser.add_conditional("mode", "advanced", "--extra-param")
 
-    # Capture help output
+    # Test with advanced mode
+    help_output = _capture_help_output(parser, ["--mode", "advanced", "--help"])
+    assert "--mode" in help_output
+    assert "--extra-param" in help_output
+
+    # Test with simple mode (should still show all conditionals)
+    help_output = _capture_help_output(parser, ["--mode", "simple", "--help"])
+    assert "--mode" in help_output
+    assert "--extra-param" in help_output
+
+    # Test with no mode (should still show all conditionals)
+    help_output = _capture_help_output(parser, ["--help"])
+    assert "--mode" in help_output
+    assert "--extra-param" in help_output
+
+
+def test_help_disabled():
+    """Test that help raises appropriate exception when disabled."""
+    parser = ConditionalArgumentParser(add_help=False)
+    parser.add_argument("--mode", choices=["simple", "advanced"])
+    parser.add_conditional("mode", "advanced", "--extra-param")
+
+    with pytest.raises(SystemExit):
+        parser.parse_args(["--mode", "advanced", "--help"])
+
+
+def _capture_help_output(parser, args):
+    """Helper function to capture help text output."""
     old_stdout = sys.stdout
-    help_output = []
     try:
         import io
 
         sys.stdout = io.StringIO()
         with pytest.raises(SystemExit):
-            parser.parse_args(["--mode", "advanced", "--help"])
-        help_output = sys.stdout.getvalue()
+            parser.parse_args(args)
+        return sys.stdout.getvalue()
     finally:
         sys.stdout = old_stdout
-
-    assert "--mode" in help_output
-    assert "--extra-param" in help_output
 
 
 def test_invalid_condition():
@@ -148,6 +178,13 @@ def test_sys_argv_default():
         sys.argv = ["program_name"]
         args = parser.parse_args()  # Note: not passing any args here
         assert args.test_flag is False
+
+        # TODO:
+        # Test sys when no args are provided
+        sys.argv = []
+        args = parser.parse_args()
+        assert args.test_flag is False
+
     finally:
         # Restore original sys.argv
         sys.argv = original_argv
